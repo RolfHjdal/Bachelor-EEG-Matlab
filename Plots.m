@@ -1,4 +1,5 @@
-%This script is used to generate the input matrix to the neural network
+%this script should now be used to generate the input matrix to the neural
+%network. this script should only be used to generate plots of the data.
 
 close all; clear all;
 
@@ -20,18 +21,18 @@ k3=inputFrequency3*(N/fs); %Find corresponding point k in fft to frequency
 k4=inputFrequency4*(N/fs); %Find corresponding point k in fft to frequency
 k5=inputFrequency5*(N/fs); %Find corresponding point k in fft to frequency
 k6=inputFrequency6*(N/fs); %Find corresponding point k in fft to frequency
-deltaL = 1 * (N/fs);
-deltaH = 4 * (N/fs);
-thetaL = 4 * (N/fs);
-thetaH = 7 * (N/fs);
-alphaL = 7 * (N/fs);
-alphaH = 15 * (N/fs);
-betaL1 = 15 * (N/fs);
-betaH1 = 20 * (N/fs);
-betaL2 = 20 * (N/fs);
-betaH2 = 25 * (N/fs);
-betaL3 = 25 * (N/fs);
-betaH3 = 30 * (N/fs);
+deltaL = 1;
+deltaH = 4;
+thetaL = 4;
+thetaH = 7;
+alphaL = 7;
+alphaH = 15;
+betaL1 = 15;
+betaH1 = 20;
+betaL2 = 20;
+betaH2 = 25;
+betaL3 = 25;
+betaH3 = 30;
 currentDataSet=1; %Dataset currently being worked on
 S= load('matlab.mat');
 
@@ -51,7 +52,7 @@ end
 
 % FFT
 FFTchannel = abs(fft(channel, N));
-
+X=fft(channel, N);
 %Build input vector for the neural network
 for i=1:7
     input(i, currentDataSet) = FFTchannel(k, i);
@@ -90,14 +91,17 @@ end
 currentDataSet=currentDataSet+1;
 end
 %% Plot illustration of the final ANN input matrix 42x200 with mean values
-mean1=mean(FFTchannel(deltaL:deltaH, 1));
-mean2=mean(FFTchannel(thetaL:thetaH, 1));
-mean3=mean(FFTchannel(alphaL:alphaH, 1));
-mean4=mean(FFTchannel(betaL1:betaH1, 1));
-mean5=mean(FFTchannel(betaL2:betaH2, 1));
-mean6=mean(FFTchannel(betaL3:betaH3, 1));
-allMean=[mean1 mean2 mean3 mean4 mean5 mean6];
 
+
+L=1280; %length in time domain.
+Px=abs(X)/(N*L); %Power of each freq components	 
+fVals=fs*(0:N/2-1)/N;	 
+mean1=mean(Px(1:32));
+mean2=mean(Px(32:56));
+mean3=mean(Px(56:120));
+mean4=mean(Px(120:160));
+mean5=mean(Px(160:200));
+mean6=mean(Px(200:240));	
 k=inputFrequency*(N/fs); %Find corresponding point k in fft to frequency
 k2=inputFrequency2*(N/fs); %Find corresponding point k in fft to frequency
 k3=inputFrequency3*(N/fs); %Find corresponding point k in fft to frequency
@@ -107,28 +111,33 @@ k6=inputFrequency6*(N/fs); %Find corresponding point k in fft to frequency
 close all; 
 %plots the FFT together with mean of frequency bands.
 %repmat(mean2, thetaH-thetaL+1)
-area(1:512, FFTchannel(1:512,1), 'LineWidth', 0.5); hold on
-plot(1:deltaH, ones(1, deltaH)*mean1, 'g', 'LineWidth', 2); 
+%area(1:512, FFTchannel(1:512,1), 'LineWidth', 0.5); 
+%area(fVals,FFTchannel(1:512,1), 'LineWidth', 0.5) 
+area(fVals,Px(1:512), 'LineWidth', 0.5) 
+hold on
+plot(0:deltaH, ones(1, 5)*mean1, 'g', 'LineWidth', 2); 
 plot(thetaL:thetaH, ones(1, thetaH-thetaL+1)*mean2, 'c', 'LineWidth', 2)
 plot(alphaL:alphaH,  ones(1, alphaH-alphaL+1)*mean3, 'm', 'LineWidth', 2)
 plot(betaL1:betaH1,  ones(1, betaH1-betaL1+1)*mean4, 'r', 'LineWidth', 2)
 plot(betaL2:betaH2,  ones(1, betaH2-betaL2+1)*mean5,  'r',   'LineWidth', 2)
 plot(betaL3:betaH3,  ones(1, betaH3-betaL3+1)*mean6, 'r', 'LineWidth', 2); hold off
 title('FFT and mean values (Channel 1)')
-ylabel('Magnitude |X(k)|')
-xlabel('Datapoint k in FFT')
-h=legend('FFT', '\delta (1-4Hz)', '\theta (4-7Hz)', '\alpha (7-15Hz)', '\beta Low (15-20Hz)', '\beta Medium (20-25Hz)', '\beta High (25-30Hz)')
-
+ylabel('Power Spectral Density (W/Hz)')
+xlabel('Frequency (Hz)')
+legend('FFT', '\delta (1-4Hz)', '\theta (4-7Hz)', '\alpha (7-15Hz)', '\beta Low (15-20Hz)', '\beta Medium (20-25Hz)', '\beta High (25-30Hz)')
 grid on
-axis([0 512 0 3500])
+
 %% illustration of 7x200 input matrix @20Hz
-mean1=mean(FFTchannel(deltaL:deltaH, 1));
-mean2=mean(FFTchannel(thetaL:thetaH, 1));
-mean3=mean(FFTchannel(alphaL:alphaH, 1));
-mean4=mean(FFTchannel(betaL1:betaH1, 1));
-mean5=mean(FFTchannel(betaL2:betaH2, 1));
-mean6=mean(FFTchannel(betaL3:betaH3, 1));
-allMean=[mean1 mean2 mean3 mean4 mean5 mean6];
+L=1280; %length in time domain.
+Px=abs(X)/(N*L); %Power of each freq components	 
+fVals=fs*(0:N/2-1)/N;	 
+mean1=mean(FFTchannel(1:32));
+mean2=mean(FFTchannel(32:56));
+mean3=mean(FFTchannel(56:120));
+mean4=mean(FFTchannel(120:160));
+mean5=mean(FFTchannel(160:200));
+mean6=mean(FFTchannel(200:240));
+
 k=inputFrequency*(N/fs); %Find corresponding point k in fft to frequency
 k2=inputFrequency2*(N/fs); %Find corresponding point k in fft to frequency
 k3=inputFrequency3*(N/fs); %Find corresponding point k in fft to frequency
@@ -138,28 +147,30 @@ k6=inputFrequency6*(N/fs); %Find corresponding point k in fft to frequency
 close all; 
 %plots the FFT together with mean of frequency bands.
 %repmat(mean2, thetaH-thetaL+1)
-area(1:512, FFTchannel(1:512,1), 'LineWidth', 0.5); hold on
+area(fVals, Px(1:512), 'LineWidth', 0.5); hold on
 %plot(1:deltaH, ones(1, deltaH)*mean1, 'g', 'LineWidth', 2); 
 %plot(thetaL:thetaH, ones(1, thetaH-thetaL+1)*mean2, 'c', 'LineWidth', 2)
 %plot(alphaL:alphaH,  ones(1, alphaH-alphaL+1)*mean3, 'm', 'LineWidth', 2)
 %plot(betaL1:betaH1,  ones(1, betaH1-betaL1+1)*mean4, 'r', 'LineWidth', 2)
 %plot(betaL2:betaH2,  ones(1, betaH2-betaL2+1)*mean5,  'r',   'LineWidth', 2)
-plot(betaL3:betaL3,  ones(1, betaH3-betaL3+1)*mean6, 'r', 'LineWidth', 2); hold off
+%plot(betaL3:betaL3,  ones(1, betaH3-betaL3+1)*mean6, 'r', 'LineWidth', 2); hold off
 title('FFT (Channel 1)')
-ylabel('Magnitude |X(k)|')
-xlabel('Datapoint k in FFT')
-h=legend('FFT', '\beta 20Hz')
-line([k2 k2], [0.1 750], 'Color', 'r', 'LineWidth', 2) %plot marker @20Hz
+ylabel('Power Spectral Density (W/Hz)')
+xlabel('Frequency (Hz)')
+legend('FFT', '\beta 20Hz')
+line([20 20], [0.00001 0.0005], 'Color', 'r', 'LineWidth', 2) %plot marker @20Hz
 grid on
-axis([0 512 0 3500])
 %% illustration of 7x200 input matrix using several frequencies
-mean1=mean(FFTchannel(deltaL:deltaH, 1));
-mean2=mean(FFTchannel(thetaL:thetaH, 1));
-mean3=mean(FFTchannel(alphaL:alphaH, 1));
-mean4=mean(FFTchannel(betaL1:betaH1, 1));
-mean5=mean(FFTchannel(betaL2:betaH2, 1));
-mean6=mean(FFTchannel(betaL3:betaH3, 1));
-allMean=[mean1 mean2 mean3 mean4 mean5 mean6];
+L=1280; %length in time domain.
+Px=abs(X)/(N*L); %Power of each freq components	 
+fVals=fs*(0:N/2-1)/N;	 
+mean1=mean(FFTchannel(1:32));
+mean2=mean(FFTchannel(32:56));
+mean3=mean(FFTchannel(56:120));
+mean4=mean(FFTchannel(120:160));
+mean5=mean(FFTchannel(160:200));
+mean6=mean(FFTchannel(200:240));
+
 k=8*(N/fs); %Find corresponding point k in fft to frequency
 k2=13*(N/fs); %Find corresponding point k in fft to frequency
 k3=16*(N/fs); %Find corresponding point k in fft to frequency
@@ -169,26 +180,26 @@ k6=30*(N/fs); %Find corresponding point k in fft to frequency
 close all; 
 %plots the FFT together with mean of frequency bands.
 %repmat(mean2, thetaH-thetaL+1)
-area(1:512, FFTchannel(1:512,1), 'LineWidth', 0.5); hold on
-plot(1:1,  ones(1, 1)*mean1, 'green', 'LineWidth',  2) 
-plot(thetaL:thetaL,  ones(1, thetaH-thetaH+1)*mean2, 'cyan', 'LineWidth', 2)
-plot(alphaL:alphaL,  ones(1, alphaH-alphaH+1)*mean3, 'magenta', 'LineWidth',  2)
-plot(betaL1:betaL1,  ones(1, betaH1-betaH1+1)*mean4, 'red', 'LineWidth',  2)
-plot(betaL2:betaL2,  ones(1, betaH2-betaH2+1)*mean5, 'red', 'LineWidth',  2)
-plot(betaL3:betaL3,  ones(1, betaH3-betaH3+1)*mean6, 'r', 'LineWidth',  2); hold off
+area(fVals, Px(1:512), 'LineWidth', 0.5); hold on
+% plot(1:1,  ones(1, 1)*mean1, 'green', 'LineWidth',  2) 
+% plot(thetaL:thetaL,  ones(1, thetaH-thetaH+1)*mean2, 'cyan', 'LineWidth', 2)
+% plot(alphaL:alphaL,  ones(1, alphaH-alphaH+1)*mean3, 'magenta', 'LineWidth',  2)
+% plot(betaL1:betaL1,  ones(1, betaH1-betaH1+1)*mean4, 'red', 'LineWidth',  2)
+% % plot(betaL2:betaL2,  ones(1, betaH2-betaH2+1)*mean5, 'red', 'LineWidth',  2)
+% plot(betaL3:betaL3,  ones(1, betaH3-betaH3+1)*mean6, 'r', 'LineWidth',  2); hold off
 title('FFT (Channel 1)')
-ylabel('Magnitude |X(k)|')
-xlabel('Datapoint k in FFT')
+ylabel('Power Spectral Density (W/Hz)')
+xlabel('Frequency (Hz)')
 legend('FFT', '\alpha 8Hz', '\alpha 13Hz', '\beta 16Hz', '\beta 20Hz', '\beta 25Hz', '\beta 30Hz')
 
-line([k k], [0.1 750], 'Color', 'g', 'LineWidth', 2) %plot marker @8Hz
-line([k2 k2], [0.1 750], 'Color', 'c', 'LineWidth', 2) %plot marker @13Hz
-line([k3 k3], [0.1 750], 'Color', 'm', 'LineWidth', 2) %plot marker @16Hz
-line([k4 k4], [0.1 750], 'Color', 'r', 'LineWidth', 2) %plot marker @20Hz
-line([k5 k5], [0.1 750], 'Color', 'r', 'LineWidth', 2) %plot marker @25Hz
-line([k6 k6], [0.1 750], 'Color', 'r', 'LineWidth', 2) %plot marker @30Hz
+line([8 8], [0.00001 0.0005], 'Color', 'g', 'LineWidth', 2) %plot marker @8Hz
+line([13 13], [0.00001 0.0005], 'Color', 'c', 'LineWidth', 2) %plot marker @13Hz
+line([16 16], [0.00001 0.0005], 'Color', 'm', 'LineWidth', 2) %plot marker @16Hz
+line([20 20], [0.00001 0.0005], 'Color', 'r', 'LineWidth', 2) %plot marker @20Hz
+line([25 25], [0.00001 0.0005], 'Color', 'r', 'LineWidth', 2) %plot marker @25Hz
+line([30 30], [0.00001 0.0005], 'Color', 'r', 'LineWidth', 2) %plot marker @30Hz
 grid on
-axis([0 512 0 3500])
+
 %%
  %Plot data
  %mean values for single plot
