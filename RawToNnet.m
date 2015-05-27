@@ -1,4 +1,5 @@
-%This script is used to generate the input matrix to the neural network
+%This script is used to generate the input matrix to the neural network.
+%Plots.m creates nicer looking plots than this script.
 
 close all; clear all;
 

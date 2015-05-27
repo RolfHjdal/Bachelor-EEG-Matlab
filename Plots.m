@@ -1,5 +1,5 @@
-%this script should now be used to generate the input matrix to the neural
-%network. this script should only be used to generate plots of the data.
+%this script should NOT be used to generate the input matrix to the neural
+%network. This script should only be used to generate plots of the data.
 
 close all; clear all;
 
